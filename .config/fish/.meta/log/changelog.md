@@ -17,6 +17,32 @@ This log tracks structural modifications, metadata updates, and relationship upd
 ---
 
 ## Commit: pending
+**Author:** Antigravity <antigravity@google.com>  
+**Date:** Wed Sep 09 22:25:00 2026 +0700  
+**Subject:** fix(variables): correct LESS_TERMCAP ANSI escape codes using zero-fork fish syntax
+
+### I. Modified Modules & Scope of Impact
+*   [`conf.d/01-variables.fish`](file:///Users/x0r/.config/fish/conf.d/01-variables.fish) (Foundation (00-09)) - Converted `LESS_TERMCAP_*` literal double-quoted escape strings to native unquoted `\e"..."` escape sequences.
+
+### II. Metadata Integration & State Transitions
+*   **Front-matter Update:** Maintained `updated_at: "2026-09-09"` in `conf.d/01-variables.fish`.
+*   **Dependency Changes:** None. Graph edges remained unchanged.
+
+### III. Architectural Changes & Systems Optimization
+*   **Zero-Fork ANSI Expansion:** In Fish shell, `\e` within double quotes (`"\e..."`) does not expand to `0x1B` (ESC byte) and is treated as literal characters, causing pagers like `less` to output raw escape strings (e.g. `\e[1m\e[33m\e[44mlines 29-74...`).
+*   Refactored all `LESS_TERMCAP_*` variables to unquoted Fish escape literals (`\e"..."`), ensuring proper terminal ANSI rendering without spawning subprocess forks or violating the <25ms startup SLA.
+*   Configured `LESS_TERMCAP_so` to `\e"[1;33m"` (bold yellow with transparent / default terminal background), removing the blue background (`\e[44m`).
+
+### IV. Empirical Validation & Performance Metrics
+*   **Objective:** Fix raw unparsed escape sequences displayed in `less` / `history` pager status lines and configure transparent background.
+*   **Systemic Effect:** Clean, transparent-background ANSI color rendering in `less` and man pages with 0 process forks.
+*   **Verification Signals:**
+    *   *Byte Validation:* `echo -n "$LESS_TERMCAP_so" | xxd` produces `1b5b...` (`0x1B` byte).
+    *   *Syntax Check:* `fish -n conf.d/*.fish config.fish` (0 errors).
+
+---
+
+## Commit: pending
 **Author:** zx0r <117382621+zx0r@users.noreply.github.com>  
 **Date:** Wed Sep 09 14:57:00 2026 +0700  
 **Subject:** feat(env,abbr): implement Meta-Workspace ~/x taxonomy, standardize XDG_BIN_HOME, and purge legacy variables
