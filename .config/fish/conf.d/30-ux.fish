@@ -7,8 +7,8 @@
 # dependencies: []
 # backlinks: ["config.fish", "conf.d/40-keymaps.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-06-25"
-# last_commit: "853273b8893d56d11bcf030b42de63bfa22f1837"
+# updated_at: "2026-09-09"
+# last_commit: "pending"
 # tags: ["ux", "cursor", "prompt", "history"]
 # ---
 
@@ -47,14 +47,7 @@ set -g fish_history_merge_sessions 1
 # Standard history size for a professional workflow
 set -gx fish_history_max_length 50000
 
-# 4. Shell State Indicators
-# Track shell state for advanced script logic
-set -g shell_login (status is-login)
-set -g shell_interactive (status is-interactive)
-set -g shell_job_control (status job-control full)
-set -g shell_restricted (status is-command-substitution)
-
-# 5. Security & Privacy
+# 3. Security & Privacy
 # Restrict default file permissions for new files (022 is the industry standard)
 umask 022
 

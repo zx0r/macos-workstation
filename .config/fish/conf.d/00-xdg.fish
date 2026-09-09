@@ -24,8 +24,8 @@ set -q XDG_CONFIG_HOME; or set -gx XDG_CONFIG_HOME "$HOME/.config"
 set -q XDG_CACHE_HOME; or set -gx XDG_CACHE_HOME "$HOME/.cache"
 set -q XDG_DATA_HOME; or set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -q XDG_STATE_HOME; or set -gx XDG_STATE_HOME "$HOME/.local/state"
-set -q XDG_RUNTIME_DIR; or set -gx XDG_RUNTIME_DIR "$TMPDIR"
 set -q XDG_BIN_HOME; or set -gx XDG_BIN_HOME "$HOME/.local/bin"
+set -q XDG_RUNTIME_DIR; or set -gx XDG_RUNTIME_DIR "$TMPDIR"
 
 # 2. XDG User Directories
 set -gx XDG_DESKTOP_DIR "$HOME/Desktop"

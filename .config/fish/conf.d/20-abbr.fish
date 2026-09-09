@@ -190,11 +190,11 @@ abbr -a chmod+ 'chmod ug+x'
 
 # 8. Dynamic eza / ls Setup (Avoids duplicate 'l' definition clashing)
 if type -q eza
-    alias l "clear && ll"
-    alias l. "eza -a | egrep '^\.'"
-    alias ls "eza -al --color=always --group-directories-first"
-    alias la "eza -a --color=always --group-directories-first"
-    alias ll "eza -abghilmu --icons=auto --color=always --group-directories-first"
+    abbr -a l "clear; and ll"
+    abbr -a l. "eza -a | egrep '^\.'"
+    abbr -a ls "eza -al --color=always --group-directories-first"
+    abbr -a la "eza -a --color=always --group-directories-first"
+    abbr -a ll "eza -abghilmu --icons=auto --color=always --group-directories-first"
     abbr -a lt "eza -aT --icons=auto --color=always --group-directories-first -snew"
     abbr -a lx "eza -lbhHigUmuSa@ --time-style=long-iso --git --color-scale --color=always --group-directories-first --icons=auto"
     abbr -a t "eza --tree --color=always --icons=auto"

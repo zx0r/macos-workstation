@@ -1,8 +1,8 @@
 # The Environment of X
 
-> **Paradigm:** Workstation as Code (WaC)  
+> **Paradigm:** Workstation as Code (WaC)
 > **Author:** [zx0r](https://github.com/zx0r)  
-> **License:** MIT  
+> **License:** MIT
 > **Platform:** macOS · Apple Silicon (arm64)  
 > **Shell SLA:** < 25 ms cold startup · **Achieved:** 9.5 ms base / 21.0 ms full interactive
 
@@ -10,10 +10,8 @@
 
 ## Abstract
 
-`x-env` is the configuration repository and reference implementation of the **Workstation
-as Code (WaC)** paradigm within the **`~/x` (`X-MADE`) Meta-Workspace**. It manages the
-declarative configuration state of the user space (`~/.config/`), enforcing idempotency,
-portability, and version-controlled reproducibility.
+**x-env** is the configuration repository and reference implementation of the **Workstation as Code (WaC)** paradigm within the **`~/x` (`X-MADE`) Meta-Workspace**. 
+It manages the declarative configuration state of the user space, enforcing idempotency, portability, and version-controlled reproducibility.
 
 Targeting macOS on Apple Silicon hardware, the repository structures user configurations
 under a centralized namespace (`config/`), designed for symlink projection into the host
@@ -287,16 +285,20 @@ The `10-runtimes.fish` layer implements a parallel cache regeneration engine. Fo
 The `00-xdg.fish` layer establishes a strict XDG Base Directory specification alongside a workstation-specific directory taxonomy:
 
 ```fish
-# Standard XDG directories
-XDG_CONFIG_HOME   → ~/.config
-XDG_CACHE_HOME    → ~/.cache
-XDG_DATA_HOME     → ~/.local/share
-XDG_STATE_HOME    → ~/.local/state
+# Meta-Workspace Taxonomy (~/x Human-Agent Ecosystem)
+X_ROOT → "$HOME/x"
+X_AGY  → "$X_ROOT/agy"  # AI Agent Hub (Skills, Rules, MCP)
+X_DEV  → "$X_ROOT/dev"  # Engineering & Development Space
+X_ENV  → "$X_ROOT/env"  # WaC / Dotfiles / Environment Substrate
+X_MIND → "$X_ROOT/mind" # Knowledge Base / Cognitive Graph / Obsidian
 
-# Workstation as Code extensions
-XDG_PROJECTS_DIR  → ~/x/dev
-XDG_DOTFILES_DIR  → ~/x/dots
-XDG_BIN_DIR       → ~/.local/bin
+# Standard XDG directories
+XDG_CONFIG_HOME   → "~/.config"
+XDG_CACHE_HOME    → "~/.cache"
+XDG_DATA_HOME     → "~/.local/share"
+XDG_STATE_HOME    → "~/.local/state"
+XDG_BIN_HOME      → "~/.local/bin"
+XDG_RUNTIME_DIR   → "$TMPDIR"
 ```
 
 All workstation directories are bootstrapped with `mkdir -p -m 700` on first launch, ensuring secure permissions with no manual intervention required.
