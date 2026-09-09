@@ -115,9 +115,9 @@ set -gx LC_MONETARY en_US.UTF-8
 # ━━━━━━━━━━━━━━ Terminal Settings ━━━━━━━━━━━━━━
 set -gx TERMINAL kitty
 set -gx CLICOLOR 1
-set -gx FORCE_COLOR 1
-set -gx CLICOLOR_FORCE 1
 set -gx COLORTERM truecolor
+# set -gx FORCE_COLOR 3
+# set -gx CLICOLOR_FORCE 1
 
 # NOTE: Custom MANPATH/INFOPATH overrides are removed as they override the system
 # default lookup paths and break standard manual lookups (e.g. `man ls`).
