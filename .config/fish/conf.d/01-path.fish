@@ -7,9 +7,9 @@
 # dependencies: ["conf.d/00-xdg.fish"]
 # backlinks: ["config.fish", "conf.d/02-brew.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-07-12"
+# updated_at: "2026-09-09"
 # last_commit: "pending"
-# tags: ["path", "mise", "shims"]
+# tags: ["path", "mise", "shims", "docker"]
 # ---
 
 # 1. High-priority search paths to prepend (in order of priority: first is highest)
@@ -20,7 +20,8 @@
 # resolve through the shim dispatcher — NOT via hardcoded installs/* paths.
 # This is the single source of truth for runtime version management.
 set -l mise_shims_dir "$HOME/.local/share/mise/shims"
-set -l prepend_paths "$BOB_HOME" /opt/homebrew/sbin /opt/homebrew/bin "$mise_shims_dir"
+set -l docker_bin_dir "$HOME/.docker/bin"
+set -l prepend_paths "$BOB_HOME" "$docker_bin_dir" /opt/homebrew/sbin /opt/homebrew/bin "$mise_shims_dir"
 
 # 2. Essential default system paths that must always be present in PATH (fallback priority)
 set -l default_system_paths /usr/local/bin /usr/bin /bin /usr/sbin /sbin /usr/local/sbin

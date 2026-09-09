@@ -111,7 +111,18 @@ To allow the developer to audit performance and security on-demand, we created t
 
 ---
 
-## 7. Architectural Decisions & Optimization Matrix
+## 7. Terminal Graphics Protocols & Multiplexer Passthrough (Yazi / Kitty / Ghostty)
+A critical systems-level issue occurs when modern GPU-accelerated TUI file managers (like Yazi) execute inside terminal multiplexers (Tmux):
+*   **The APC Leak Physics:** Yazi transmits Kitty Graphics Protocol capability probes (`\x1b_Gi=...;AAAA\x1b\`). Outer terminals reply with Application Program Command (APC) sequences (`\x1b_Gi=...;OK\x1b\`).
+*   **Tmux Key Parser Gap:** Tmux's `tty-keys.c` does not implement an APC state machine, parsing `\x1b_` as `Alt+_` and emitting the unhandled semicolon `;` into the active pane as a user keystroke. In Yazi, `;` triggers `shell --interactive`, causing a modal popup titled **`Shell`** with `OK;...;OK` injected into the input.
+*   **Architectural Fix:**
+    1.  Enabled universal terminal features via wildcard matching: `set -as terminal-features ",*:RGB,clipboard,hyperlinks,extkeys,focus,overline,strikethrough,cstyle,usstyle,mouse,sync"`.
+    2.  Synchronized client environment variables: `set -ga update-environment "TERM TERM_PROGRAM ..."`.
+    3.  Purged conflicting legacy bindings (`youtube-viewer` with `-h -fv` flags) to eliminate orphan child splits.
+
+---
+
+## 8. Architectural Decisions & Optimization Matrix
 
 | Anti-pattern (Avoid) | Architect's Pattern (Implement) | Technical Rationale | Latency Savings |
 | :--- | :--- | :--- | :--- |
@@ -120,10 +131,13 @@ To allow the developer to audit performance and security on-demand, we created t
 | `defaults read com.apple.screencapture` | Lazy-loaded Function | Removing macOS plist queries from the critical boot path. | **~6.6ms** |
 | `fish_add_path` | In-memory loop arrays | Prevents blocking synchronous disk writes to `fish_variables` on shell boot. | **~5ms** |
 | `mise activate fish` | Static Wrapper + Shims in PATH | Sourcing mise activate spawns prompt hooks and forks `mise hook-env` (taking ~46ms) and overrides shims with installs paths. | **~46ms** |
+| Raw `export PATH="$PATH:..."` | Vectorized Native Sanitizer | C++ builtins (`path normalize`, `path filter -d`) prevent scalar string mangling & preserve <25ms SLA. | **Zero-Fork** |
+| Conflicting `-h -fv` / missing bins | Clean removal & key unbinding | Prevents orphaned background shell panes from hanging in Tmux. | Stability |
+| Unforwarded `TERM_PROGRAM` | Universal `terminal-features ,*:` + Sync | Eliminates APC escape sequence leakage (`OK;...;OK` in Yazi) through DCS passthrough. | Protocol Integrity |
 | Monolithic / Flat configs | Decade-Spaced contexts | Decade spacing (00, 10, 20...) enables scalable plugins without loading-order issues. | Ergononomics / DX |
 | Storing sockets in `~/.cache` | Secure State (`~/.ssh/agent_env` + umask) | Keeps authentication sockets out of public logs with `0600` owner-only permissions. | Security Integrity |
 
 ---
 
-## 8. Conclusion
-The workstation configuration has been successfully engineered into a modular, zero-fork system, reducing cold startup times from **~80ms** to a world-class **~23.4ms–26.8ms**. The architecture is clean, highly extensible, and secure. Future expansions should follow the decade-spaced Bounded Context layers and prioritize in-memory calculations over process forks to maintain the startup SLA.
+## 9. Conclusion
+The workstation configuration has been successfully engineered into a modular, zero-fork system, reducing cold startup times from **~80ms** to a world-class **~22.5ms**. The architecture is clean, highly extensible, and secure. Future expansions should follow the decade-spaced Bounded Context layers and prioritize in-memory calculations over process forks to maintain the startup SLA.

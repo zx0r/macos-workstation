@@ -83,12 +83,14 @@ function fish_user_key_bindings
     end
 
     # Atuin Smart History Search
-    if type -q atuin
+    if functions -q _atuin_search
         # Rebind Ctrl+R in normal, insert, and visual modes
         bind \cr _atuin_search
         bind -M insert \cr _atuin_search
         bind -M visual \cr _atuin_search
+    end
 
+    if functions -q _atuin_bind_up
         # Bind Up arrow keys (compatible with Fish 4.x key names)
         bind up _atuin_bind_up
         bind \eOA _atuin_bind_up

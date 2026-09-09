@@ -7,9 +7,9 @@
 # dependencies: ["lazygit", "fzf"]
 # backlinks: []
 # created_at: "2026-06-25"
-# updated_at: "2026-06-25"
-# last_commit: ""
-# tags: ["git", "fzf", "navigation"]
+# updated_at: "2026-09-09"
+# last_commit: "pending"
+# tags: ["git", "fzf", "navigation", "x-workspace"]
 # ---
 
 function lazygit-recent --description "Fuzzy find a Git repo and open lazygit"
@@ -29,11 +29,8 @@ function lazygit-recent --description "Fuzzy find a Git repo and open lazygit"
         set repos (ghq list -p)
     end
 
-    # 2. Add directories from common project folders if they exist
-    set -l projects_dir "$HOME/x/dev"
-    if test -n "$XDG_PROJECTS_DIR"; and test -d "$XDG_PROJECTS_DIR"
-        set projects_dir "$XDG_PROJECTS_DIR"
-    end
+    # 2. Add directories from managed engineering workspace ($X_DEV)
+    set -l projects_dir (set -q X_DEV; and echo "$X_DEV"; or echo "$HOME/x/dev")
 
     if test -d "$projects_dir"
         # Find .git directories up to depth 3 in projects directory (very fast)

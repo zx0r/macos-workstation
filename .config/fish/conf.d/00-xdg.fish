@@ -7,9 +7,9 @@
 # dependencies: []
 # backlinks: ["config.fish", "conf.d/01-path.fish", "conf.d/01-variables.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-07-13"
+# updated_at: "2026-09-09"
 # last_commit: "pending"
-# tags: ["xdg", "directory", "bootstrap"]
+# tags: ["xdg", "directory", "bootstrap", "x-workspace"]
 # ---
 
 # 0. Vendor Hook Guard (Zero-Fork SLA enforcement)
@@ -25,6 +25,7 @@ set -q XDG_CACHE_HOME; or set -gx XDG_CACHE_HOME "$HOME/.cache"
 set -q XDG_DATA_HOME; or set -gx XDG_DATA_HOME "$HOME/.local/share"
 set -q XDG_STATE_HOME; or set -gx XDG_STATE_HOME "$HOME/.local/state"
 set -q XDG_RUNTIME_DIR; or set -gx XDG_RUNTIME_DIR "$TMPDIR"
+set -q XDG_BIN_HOME; or set -gx XDG_BIN_HOME "$HOME/.local/bin"
 
 # 2. XDG User Directories
 set -gx XDG_DESKTOP_DIR "$HOME/Desktop"
@@ -34,19 +35,17 @@ set -gx XDG_PICTURES_DIR "$HOME/Pictures"
 set -gx XDG_VIDEOS_DIR "$HOME/Movies"
 set -gx XDG_MUSIC_DIR "$HOME/Music"
 set -gx XDG_PUBLICSHARE_DIR "$HOME/Public"
-set -gx XDG_SCREENSHOTS_DIR "$XDG_PICTURES_DIR/Screenshots"
 
-# 3. Workstation Directory Layout Taxonomy (Workstation as Code / WaC)
-set -gx XDG_PROJECTS_DIR "$HOME/x/dev"
-set -gx XDG_DOTFILES_DIR "$HOME/x/dots"
-set -gx XDG_BIN_DIR "$HOME/.local/bin"
-set -gx XDG_BACKUP_DIR "$HOME/.config/fish/backups"
+# 3. Meta-Workspace Taxonomy (~/x Human-Agent Ecosystem)
+set -gx X_ROOT "$HOME/x"
+set -gx X_AGY "$X_ROOT/agy" # AI Agent Hub (Skills, Rules, MCP)
+set -gx X_DEV "$X_ROOT/dev" # Engineering & Development Space
+set -gx X_ENV "$X_ROOT/env" # WaC / Dotfiles / Environment Substrate
+set -gx X_MIND "$X_ROOT/mind" # Knowledge Base / Cognitive Graph / Obsidian
 
-# 4. Directory Bootstrap (Ensures layout directories exist with secure permissions)
-set -l xdg_directories_to_bootstrap $XDG_SCREENSHOTS_DIR $XDG_PROJECTS_DIR $XDG_DOTFILES_DIR $XDG_BIN_DIR
-for target_directory_path in $xdg_directories_to_bootstrap
-    if not test -d "$target_directory_path"
-        mkdir -p -m 700 "$target_directory_path"
-    end
+# 4. Idempotent Workspace Provisioning (In-Memory Guard / Zero-Disk SLA)
+if not set -q __X_WORKSPACE_BOOTSTRAPPED
+    test -d "$X_DEV/box" -a -d "$XDG_BIN_HOME"
+    or mkdir -p -m 700 $X_ROOT/{agy,env,mind} $X_ROOT/dev/{nda,own,box} "$XDG_BIN_HOME"
+    set -gx __X_WORKSPACE_BOOTSTRAPPED 1
 end
-

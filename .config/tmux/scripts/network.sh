@@ -1,42 +1,58 @@
 #!/usr/bin/env bash
 
-# Colors for tmux
-G="#[fg=green,bold]"
-R="#[fg=red,bold]"
-NC="#[fg=default]"
+readonly GREEN="#[fg=green,bold]"
+readonly RED="#[fg=red,bold]"
+readonly RESET="#[fg=default]"
 
-# 1. DNS: Check if proxy is actually listening on port 53
-if nc -z -u -w 1 127.0.0.1 53 2>/dev/null; then
-	DNS_OUT="${G}DNSCRYPT${NC}"
-else
-	DNS_OUT="${R}DNS-DOWN${NC}"
-fi
+readonly DNS_PORT=53
+readonly TOR_PORT=9050
+readonly VPN_GATEWAY=10.64.0.1
 
-# 2. VPN: Check for tunnel interface and ping Mullvad internal gateway
-if ifconfig | grep -q "utun" && ping -c 1 -t 1 10.64.0.1 >/dev/null 2>&1; then
-	VPN_OUT="${G}VPN${NC}"
-else
-	VPN_OUT="${R}NO-VPN${NC}"
-fi
-
-# 3. LEAKS: Monitor TCP established connections via local physical IP
-LOCAL_IP=$(ipconfig getifaddr en0 || ipconfig getifaddr en1)
-if [ -n "$LOCAL_IP" ]; then
-	LEAKS_COUNT=$(sudo lsof -i -nP -itcp | grep "$LOCAL_IP" | grep "ESTABLISHED" | grep -v "127.0.0.1" | wc -l | xargs)
-	if [ "$LEAKS_COUNT" -eq 0 ]; then
-		LEAK_OUT="${G}SAFE${NC}"
+dns() {
+	if nc -z -u -w1 127.0.0.1 "$DNS_PORT" >/dev/null 2>&1; then
+		printf "%sDNSCRYPT%s" "$GREEN" "$RESET"
 	else
-		LEAK_OUT="${R}LEAK:$LEAKS_COUNT${NC}"
+		printf "%sDNS-DOWN%s" "$RED" "$RESET"
 	fi
-else
-	LEAK_OUT="${R}OFFLINE${NC}"
-fi
+}
 
-# 4. TOR: Check SOCKS connectivity on port 9050
-if nc -z -w 1 127.0.0.1 9050 2>/dev/null; then
-	TOR_OUT="${G}TOR${NC}"
-else
-	TOR_OUT="${R}NO-TOR${NC}"
-fi
+vpn() {
+	if ifconfig | grep -q utun &&
+		ping -c1 -t1 "$VPN_GATEWAY" >/dev/null 2>&1; then
+		printf "%sVPN%s" "$GREEN" "$RESET"
+	else
+		printf "%sVPN%s" "$RED" "$RESET"
+	fi
+}
 
-echo "$TOR_OUT $VPN_OUT $DNS_OUT $LEAK_OUT"
+tor() {
+	if nc -z -w1 127.0.0.1 "$TOR_PORT" >/dev/null 2>&1; then
+		printf "%sTOR%s" "$GREEN" "$RESET"
+	else
+		printf "%sTOR%s" "$RED" "$RESET"
+	fi
+}
+
+leaks() {
+	local ip count
+
+	ip=$(ipconfig getifaddr en0 2>/dev/null || ipconfig getifaddr en1 2>/dev/null)
+	count=$(sudo lsof -i -nP -itcp | grep "$ip" | grep ESTABLISHED | grep -v 127.0.0.1 | wc -l | xargs)
+
+	if [[ -z $ip ]]; then
+		printf "%sOFFLINE%s" "$RED" "$RESET"
+		return
+	fi
+
+	if ((count == 0)); then
+		printf "%sLEAK%s" "$GREEN" "$RESET"
+	else
+		printf "%sLEAK:%d%s" "$RED" "$count" "$RESET"
+	fi
+}
+
+main() {
+	printf "%s %s %s %s\n" "$(tor)" "$(vpn)" "$(dns)" "$(leaks)"
+}
+
+main

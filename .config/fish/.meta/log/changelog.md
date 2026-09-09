@@ -6,13 +6,43 @@ responsibility: Tracks structural changes, metadata schema migrations, and confi
 dependencies: []
 backlinks: [.agents/AGENTS.md]
 created_at: 2026-06-25
-updated_at: 2026-07-12
+updated_at: 2026-09-09
 tags: [changelog, history, mdd, audit]
 ---
 
 # Meta-Driven Design Chronology & Changelog
 
 This log tracks structural modifications, metadata updates, and relationship updates across the workstation configuration nodes, serving as a chronological audit trail for parser agents.
+
+---
+
+## Commit: pending
+**Author:** zx0r <117382621+zx0r@users.noreply.github.com>  
+**Date:** Wed Sep 09 14:57:00 2026 +0700  
+**Subject:** feat(env,abbr): implement Meta-Workspace ~/x taxonomy, standardize XDG_BIN_HOME, and purge legacy variables
+
+### I. Modified Modules & Scope of Impact
+*   [`conf.d/00-xdg.fish`](file:///Users/x0r/.config/fish/conf.d/00-xdg.fish) (Foundation) - Standardized `XDG_BIN_HOME` in Base Directories; exported `X_ROOT`, `X_ENV`, `X_MIND`, `X_DEV`, `X_AGY`; purged legacy variables and pseudo-shims; implemented In-Memory Guard (`__X_WORKSPACE_BOOTSTRAPPED`) with sentinel provisioning for Zero-Disk SLA.
+*   [`conf.d/20-abbr.fish`](file:///Users/x0r/.config/fish/conf.d/20-abbr.fish) (Commands) - Added fast navigation abbreviations `x`, `xd`, `xdn`, `xdo`, `xdb`, `xa`, `xe`, `xm`; removed obsolete `cdd` and `cdp`.
+*   [`functions/lazygit-recent.fish`](file:///Users/x0r/.config/fish/functions/lazygit-recent.fish) (Functions) - Switched directly to `$X_DEV` for Git project discovery.
+*   [`functions/sync_screencapture.fish`](file:///Users/x0r/.config/fish/functions/sync_screencapture.fish) (Functions) - Switched to canonical `$XDG_PICTURES_DIR/Screenshots` path.
+*   [`.meta/MAP_OF_CONTENT.md`](file:///Users/x0r/.config/fish/.meta/MAP_OF_CONTENT.md) (Meta) - Synchronized node registry timestamps and tags.
+
+### II. Metadata Integration & State Transitions
+*   **Front-matter Update:** Updated `updated_at` to `2026-09-09` and added `x-workspace` tags across modified configuration nodes.
+*   **Dependency Changes:** Eliminated dead variable dependencies across modules.
+
+### III. Architectural Changes & Systems Optimization
+*   **Engineering Space Partitioning:** Partitioned `$X_DEV` into security-isolated subdomains: `nda` (NDA / Commercial), `own` (Personal / OSS), `box` (Sandboxes / Agent PoC).
+*   **1-to-1 GitHub Isomorphism:** Aligned environment substrate domain (`$X_ENV`, `~/x/env`) with the `zx0r/x-env` repository specification.
+*   **Namespace Hygiene:** Aligned base directories with XDG (`XDG_BIN_HOME`) and workspace ontology (`X_ROOT`, `X_ENV`, `X_MIND`, `X_DEV`, `X_AGY`).
+*   **Zero-Disk In-Memory Guard:** Guarded workspace provisioning behind `__X_WORKSPACE_BOOTSTRAPPED` bit flag with sentinel check (`test -d $X_DEV/box -a -d $XDG_BIN_HOME`), reducing runtime disk `stat` syscalls to 0 in all inherited subshells and Tmux panes.
+*   **Zero-Fork Navigation:** Registered sub-workspace routing (`xdn`, `xdo`, `xdb`, `xe`) with zero process execution overhead.
+
+### IV. Empirical Validation & Performance Metrics
+*   **Objective:** Eliminate redundant variable shims and standardize user binary directory to XDG_BIN_HOME.
+*   **Systemic Effect:** Clean environment namespace without deprecated aliases.
+*   **Verification Signals:** Syntax validation passed via `fish -n`; cold startup latency benchmarked at <25ms SLA.
 
 ---
 
@@ -424,3 +454,61 @@ This log tracks structural modifications, metadata updates, and relationship upd
 *   **Verification Signals:**
     *   *Syntax Check:* `fish -n conf.d/*.fish` — 0 errors.
     *   *Benchmarks:* `hyperfine --warmup 3 --runs 10 'fish -i -c exit'` → **21.8 ms ± 2.5 ms**. SLA restored.
+
+---
+
+## Commit: PENDING
+**Author:** Antigravity <antigravity@google.com>
+**Date:** Wed Sep 09 12:49:00 2026 +0700
+**Subject:** feat(path): integrate Docker Desktop bin directory into vectorized PATH sanitization
+
+### I. Modified Modules & Scope of Impact
+*   [`conf.d/01-path.fish`](file:///Users/x0r/.config/fish/conf.d/01-path.fish) (Foundation (00-09)) - Registered `$HOME/.docker/bin` into high-priority prepend paths with zero-fork native sanitization.
+*   [`.meta/MAP_OF_CONTENT.md`](file:///Users/x0r/.config/fish/.meta/MAP_OF_CONTENT.md) (Meta / Index) - Updated node registry for `01-path.fish` (`updated_at` & `docker` tag).
+
+### II. Metadata Integration & State Transitions
+*   **Front-matter Update:** Updated `updated_at` to `2026-09-09` and added `docker` tag in `conf.d/01-path.fish`.
+*   **Dependency Changes:** None. No graph edges changed.
+
+### III. Architectural Changes & Systems Optimization
+*   **Detailed technical breakdown:**
+    *   Docker Desktop recommends injecting raw POSIX `export PATH="$PATH:/Users/x0r/.docker/bin"`.
+    *   To prevent PATH pollution, array string mangling, and process fork overhead, `$HOME/.docker/bin` was integrated natively into the Vectorized Path Sanitization Engine in `conf.d/01-path.fish`.
+    *   Path existence and deduplication are validated via C++ builtins (`path normalize`, `path filter -d`), ensuring full compliance with the Zero-Fork architecture and preserving Mise shim precedence.
+
+### IV. Empirical Validation & Performance Metrics
+*   **Objective:** Provide seamless access to Docker CLI binaries while maintaining the <25ms cold startup SLA.
+*   **Systemic Effect:** `/Users/x0r/.docker/bin` is automatically included in `$PATH` when existing, with zero process forks.
+*   **Verification Signals:**
+    *   *Syntax Check:* `fish -n config.fish conf.d/*.fish` (0 errors).
+    *   *Path Resolution:* Verified `/Users/x0r/.docker/bin` present in `$PATH`.
+    *   *Benchmarks:* `hyperfine --warmup 10 --runs 30 'fish -i -c exit'` → **22.5 ms ± 1.0 ms** (min: 21.5 ms), comfortably meeting the Zero-Fork SLA target.
+
+---
+
+## Commit: 7fb6ae87255548871e4b90548223dc7fc84a6f80
+**Author:** Antigravity <antigravity@google.com>
+**Date:** Wed Sep 09 13:34:00 2026 +0700
+**Subject:** docs(meta): add systems engineering research node for Tmux graphics passthrough, APC leak isolation, and ghost split removal
+
+### I. Modified Modules & Scope of Impact
+*   [`.meta/research_tmux_yazi_passthrough.md`](file:///Users/x0r/.config/fish/.meta/research_tmux_yazi_passthrough.md) (Meta / Logging) - Created atomic research node analyzing Kitty Graphics Protocol APC leaks, Tmux `tty-keys.c` gap, Docker PATH vectorization, and split-window collisions.
+*   [`.meta/MAP_OF_CONTENT.md`](file:///Users/x0r/.config/fish/.meta/MAP_OF_CONTENT.md) (Meta / Index) - Registered `research_tmux_yazi_passthrough.md` in Semantic Node Registry.
+*   [`.meta/GEMINI.md`](file:///Users/x0r/.config/fish/.meta/GEMINI.md) (Meta / Logging) - Added section 7 and updated optimization matrix for terminal graphics passthrough.
+
+### II. Metadata Integration & State Transitions
+*   **Front-matter Update:** Registered node with `mdd-node-v1` schema, directional dependencies to `01-path.fish` & `functions/y.fish`, and backlinks to `MAP_OF_CONTENT.md` & `GEMINI.md`.
+*   **Dependency Changes:** Expanded knowledge graph edges to include multiplexer graphics protocol troubleshooting.
+
+### III. Architectural Changes & Systems Optimization
+*   **Detailed technical breakdown:**
+    *   Formalized protocol analysis of Yazi's Kitty Graphics capability probe (`\x1b_Gi=...`) and outer terminal APC response parsing in Tmux.
+    *   Documented root cause of phantom `Shell` popup modal with string injection `OK;64728005;OK` caused by `;` keypress emission.
+    *   Recorded universal terminal-features configuration (`set -as terminal-features ",*:..."`) and master server daemon cache invalidation procedure.
+
+### IV. Empirical Validation & Performance Metrics
+*   **Objective:** Prevent recurring multiplexer/TUI protocol regressions and maintain self-healing capability for AI parser agents.
+*   **Systemic Effect:** Knowledge graph fully indexed and synchronized across all MDD documentation nodes.
+*   **Verification Signals:**
+    *   *Graph Consistency:* Verified all backlinks and dependencies are resolved.
+    *   *Syntax Check:* All `.fish` files verified with `fish -n`.

@@ -7,9 +7,9 @@
 # dependencies: ["conf.d/00-xdg.fish"]
 # backlinks: ["config.fish", "conf.d/10-runtimes.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-06-25"
-# last_commit: "853273b8893d56d11bcf030b42de63bfa22f1837"
-# tags: ["variables", "environment", "telemetry", "locale"]
+# updated_at: "2026-09-09"
+# last_commit: "pending"
+# tags: ["variables", "environment", "telemetry", "locale", "x-workspace"]
 # ---
 
 # ━━━━━━━━━━━━━━ System Compatibility & Behavior ━━━━━━━━━━━━━━

@@ -1,4 +1,4 @@
-# zx0r-workstation
+# The Environment of X
 
 > **Paradigm:** Workstation as Code (WaC)  
 > **Author:** [zx0r](https://github.com/zx0r)  
@@ -10,9 +10,22 @@
 
 ## Abstract
 
-This repository constitutes a reference implementation of the **Workstation as Code** (WaC) paradigm — a systems-engineering discipline that treats the complete configuration state of a developer workstation as a version-controlled, reproducible, and declaratively managed software artifact. In contrast to ad-hoc manual configuration management, WaC imposes the same rigor applied to production infrastructure — idempotency, auditability, and deterministic reconstruction — upon the local development environment.
+`x-env` is the configuration repository and reference implementation of the **Workstation
+as Code (WaC)** paradigm within the **`~/x` (`X-MADE`) Meta-Workspace**. It manages the
+declarative configuration state of the user space (`~/.config/`), enforcing idempotency,
+portability, and version-controlled reproducibility.
 
-The implementation targets macOS on Apple Silicon hardware and employs a layered, decade-spaced modular architecture within the Fish interactive shell. All initialisation routines are subject to a strict **Zero-Fork SLA** of 25 ms, achieved through static cache pre-compilation, in-memory vectorized PATH sanitisation, and lazy cryptographic TTY bindings. The runtime environment integrates a curated toolchain spanning terminal emulation, session multiplexing, fuzzy navigation, cryptographic identity management, privacy-preserving DNS, and AI-assisted shell workflows.
+Targeting macOS on Apple Silicon hardware, the repository structures user configurations
+under a centralized namespace (`config/`), designed for symlink projection into the host
+system in strict adherence to the **XDG Base Directory Specification** (`~/.config/`).
+
+The core of the environment is a layered, decade-spaced modular architecture (`00–59`)
+within the Fish interactive shell. All shell initialisation routines are governed by a
+**Zero-Fork SLA (< 25 ms)**, achieved through static cache pre-compilation, vectorized C++
+in-memory PATH sanitisation, In-Memory Sentinel Guards, and lazy cryptographic TTY bindings.
+The configuration suite encompasses terminal emulation (Kitty, Alacritty, iTerm2), session
+multiplexing (Tmux), shell history (Atuin), syntax-highlighted tooling (Bat, Ripgrep), and
+Git workflows (Lazygit).
 
 ---
 

@@ -44,11 +44,14 @@ end
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # Set to 1 to delegate all SSH authentication to gpg-agent (professional yubikey setup).
 # Set to 0 to use standard ssh-agent.
-set -l should_use_gpg_agent_for_ssh 0
+set -l should_use_gpg_agent_for_ssh 1
 
 if test $should_use_gpg_agent_for_ssh -eq 1
-    # Point SSH to GPG Agent's SSH emulation socket
-    set -gx SSH_AUTH_SOCK "$HOME/.gnupg/S.gpg-agent.ssh"
+    # Guard: If in an active inbound SSH session, preserve the forwarded SSH agent
+    if not set -q SSH_TTY; and not set -q SSH_CLIENT; and not set -q SSH_CONNECTION
+        # Point SSH to GPG Agent's SSH emulation socket
+        set -gx SSH_AUTH_SOCK "$HOME/.gnupg/S.gpg-agent.ssh"
+    end
 else
     # Zero-Fork SSH Agent Daemon Cache Loader
     # If no agent socket is provided by the OS/Launchd, load or spawn an agent.

@@ -7,9 +7,9 @@
 # dependencies: []
 # backlinks: ["config.fish"]
 # created_at: "2026-06-24"
-# updated_at: "2026-07-13"
+# updated_at: "2026-09-09"
 # last_commit: "pending"
-# tags: ["abbreviations", "shortcuts", "productivity"]
+# tags: ["abbreviations", "shortcuts", "productivity", "x-workspace"]
 # ---
 
 # Defensive check: Abbreviations are only relevant for interactive shell usage
@@ -74,6 +74,8 @@ abbr -a brewup 'brew update; brew upgrade'
 abbr -a brewclean 'brew autoremove; brew cleanup --prune=all'
 abbr -a brewdry 'brew cleanup --prune=all --dry-run'
 abbr -a brewdoc 'brew doctor'
+
+# dua-cli,mole,dut,ncdu
 abbr -a brewdu 'dua (brew --cache)'
 
 # Homebrew: update -> upgrade -> autoremove -> cleanup
@@ -109,6 +111,34 @@ abbr -a pipclean 'pip cache purge'
 abbr -a pkgcheck 'brew update; brew outdated; mise ls; bun --version; pip cache info'
 abbr -a pkgclean 'brew autoremove; brew cleanup --prune=all; mise prune; npm cache verify; pip cache purge'
 
+# --------------------------------------------------------------------- #
+# Disk space tooling contract:
+
+# disk: essential macOS disk space toolkit
+abbr -a diskfree 'df -h / /System/Volumes/Data'
+abbr -a diskcheck 'diskutil info /; echo; df -h / /System/Volumes/Data'
+abbr -a disktop 'dust -d 2 <path>'
+
+# mole: safety-first macOS cleanup workflows
+abbr -a mohome 'mo analyze $HOME'
+abbr -a modisk 'mo analyze'
+abbr -a movolumes 'mo analyze /Volumes'
+abbr -a mocheck 'mo clean --dry-run; mo installer --dry-run; mo purge --dry-run'
+abbr -a mocleandry 'mo clean --dry-run --debug'
+abbr -a moclean 'mo clean'
+abbr -a mopurgedry 'mo purge --dry-run'
+abbr -a mopurge 'mo purge'
+abbr -a moinstallerdry 'mo installer --dry-run'
+abbr -a moinstaller 'mo installer'
+abbr -a mohist 'mo history'
+abbr -a mostatus 'mo status'
+
+# composition: explicit disk workflows
+abbr -a spaceaudit 'diskcheck; echo; dust -d 2 $HOME; echo; mo clean --dry-run; echo; mo purge --dry-run'
+abbr -a spaceclean 'mo clean --dry-run; mo purge --dry-run; mo installer --dry-run'
+
+# --------------------------------------------------------------------- #
+
 # 3. Core Editor & Terminal Shorthands
 abbr -a c clear
 abbr -a n nvim
@@ -128,24 +158,22 @@ abbr -a ... 'cd ../../'
 abbr -a .... 'cd ../../../'
 abbr -a ..... 'cd ../../../../'
 
-abbr -a cds "cd \$XDG_DATA_HOME"
-abbr -a cfg "cd \$XDG_CONFIG_HOME"
-abbr -a cdb "cd \$XDG_BIN_HOME"
-abbr -a cdd "cd \$XDG_DOTFILES_DIR"
-abbr -a cdp "cd \$XDG_PROJECTS_DIR"
+abbr -a cds "cd $XDG_DATA_HOME"
+abbr -a cfg "cd $XDG_CONFIG_HOME"
+abbr -a cdb "cd $XDG_BIN_HOME"
 
-abbr -a cdt "cd \$XDG_CONFIG_HOME/tmux"
-abbr -a cdf "cd \$XDG_CONFIG_HOME/fish"
-abbr -a cdn "cd \$XDG_CONFIG_HOME/nvim"
+abbr -a cdt "cd $XDG_CONFIG_HOME/tmux"
+abbr -a cdf "cd $XDG_CONFIG_HOME/fish"
+abbr -a cdn "cd $XDG_CONFIG_HOME/nvim"
 
 # 6. Editing & Sourcing Configs
-abbr -a ea "nvim \$XDG_CONFIG_HOME/fish/conf.d/20-abbr.fish"
-abbr -a et "nvim \$XDG_CONFIG_HOME/tmux/tmux.conf"
-abbr -a ef "nvim \$XDG_CONFIG_HOME/fish/config.fish"
+abbr -a ea "nvim $XDG_CONFIG_HOME/fish/conf.d/20-abbr.fish"
+abbr -a et "nvim $XDG_CONFIG_HOME/tmux/tmux.conf"
+abbr -a ef "nvim $XDG_CONFIG_HOME/fish/config.fish"
 
-abbr -a sa "source \$HOME/.config/fish/conf.d/20-abbr.fish"
-abbr -a sf "source \$HOME/.config/fish/config.fish"
-abbr -a st "tmux source-file \$HOME/.config/tmux/tmux.conf"
+abbr -a sa "source $HOME/.config/fish/conf.d/20-abbr.fish"
+abbr -a sf "source $HOME/.config/fish/config.fish"
+abbr -a st "tmux source-file $HOME/.config/tmux/tmux.conf"
 
 # 7. File Permissions Shortcuts
 abbr -a 000 'chmod -R 000' # No permissions for owner, group, or others
@@ -192,7 +220,7 @@ abbr -a gd "git diff"
 abbr -a gco "git checkout"
 abbr -a gb "git branch"
 abbr -a lg lazygit
-abbr -a dot "git --git-dir=\$HOME/.git_bare_repo --work-tree=\$HOME"
+abbr -a dot "git --git-dir=$HOME/.git_bare_repo --work-tree=$HOME"
 
 # 10. Network & Port Inspection
 abbr -a myip "curl ifconfig.me"
@@ -282,4 +310,46 @@ if type -q kubectl
     abbr -a kbl 'kubectl logs'
 end
 
+# System Monitoring
+abbr -a meminfo 'free -m -l -t' # Show free and used memory
+abbr -a psgrep 'ps aux | grep -v grep | grep -i -e VSZ -e {argv}' # Custom ps grep command
+abbr -a memhog 'ps -eo pid,ppid,cmd,%mem --sort=-%mem | head' # Processes consuming most memory
+abbr -a cpuhog 'ps -eo pid,ppid,cmd,%cpu --sort=-%cpu | head' # Processes consuming most CPU
+abbr -a cpuinfo lscpu # Show CPU info
+abbr -a cpu "cpuid -i | grep uarch | head -n 1" # Show CPU microarchitecture
+abbr -a distro 'cat /etc/*-release' # Show OS info
+abbr -a ports 'netstat -tulanp' # Show open ports
+
+# Copy / pasting
+abbr -a cpwd 'pwd | wl-copy' # Copy current path
+abbr -a pa wl-paste # Paste clipboard contents
+
+# Block devices
+abbr -a lsblk "lsblk --output=NAME,FSTYPE,FSVER,MOUNTPOINT,LABEL,PARTLABEL,UUID,PARTUUID,FSAVAIL,FSUSE%" # Show block devices with filesystem usage
+abbr -a dmesg 'dmesg -wH || dmesg | less' # Follow kernel messages or open dmesg in pager
+
+# SSH and file transfer commands
+abbr -a ssh256 "set -gx TERM xterm-256color command ssh"
+abbr -a mosh "set -gx TERM xterm-256color command mosh"
+abbr -a sshrev 'ssh -CqTnN -R 0.0.0.0:8443:192.168.1.2:443 user@202.115.8.1' # # Reverse Proxy: Forward port (8443) from external host (202.115.8.1) to internal host (192.168.1.2:443)
+abbr -a sshfwd 'ssh -CqTnN -L 0.0.0.0:8443:192.168.1.2:443 user@192.168.1.3' # # Forward Proxy: Forward local port (8443) through 192.168.1.3 to internal host (192.168.1.2:443)
+abbr -a sshsocks 'ssh -CqTnN -D localhost:1080 user@202.115.8.1' # # SOCKS5 Proxy: Forward SOCKS5 proxy requests from local port (1080) through remote host
+abbr -a sshfs 'sshfs name@server:/path/to/folder /path/to/mount/point' # Mount a remote filesystem over SSH
+abbr -a sshwrt 'ssh root@openwrt.lan' # Login to remote host as user
+abbr -a sshport 'ssh -p {port} user@host' # Login to host specifying port
+abbr -a sshcopy 'ssh-copy-id user@host' # Copy SSH key to remote host to avoid password prompts
+abbr -a scp_push 'scp {fn} user@host:path' # Copy file to remote host
+abbr -a scp_pull 'scp user@host:path dest' # Copy file from remote host
+abbr -a scp_port 'scp -P {port} ...' # Copy file to remote host specifying port
+
 abbr -a valid_json 'python -m json.tool settings.json > /dev/null && echo "✅ Valid JSON"'
+
+# ━━━━━━━━━━━━━━ Meta-Workspace (~/x) Navigation ━━━━━━━━━━━━━━
+abbr -a x   'cd $X_ROOT'
+abbr -a xd  'cd $X_DEV'
+abbr -a xdn 'cd $X_DEV/nda'
+abbr -a xdo 'cd $X_DEV/own'
+abbr -a xdb 'cd $X_DEV/box'
+abbr -a xa  'cd $X_AGY'
+abbr -a xe  'cd $X_ENV'
+abbr -a xm  'cd $X_MIND'
